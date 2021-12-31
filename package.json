@@ -11,14 +11,53 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:vscode-create-file.helloWorld"
+		"onCommand:vscode-create-file.createFromPanel",
+		"onCommand:vscode-create-file.vueTemplate",
+		"onCommand:vscode-create-file.vueTsTemplate",
+		"onCommand:vscode-create-file.vue3Template"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "vscode-create-file.helloWorld",
-				"title": "Hello World"
+				"command": "vscode-create-file.createFromPanel",
+				"title": "Create File"
+			},
+			{
+				"command": "vscode-create-file.vueTemplate",
+				"title": "Use Vue Template"
+			},
+			{
+				"command": "vscode-create-file.vueTsTemplate",
+				"title": "Use Vue-Ts Template"
+			},
+			{
+				"command": "vscode-create-file.vue3Template",
+				"title": "Use Vue3 Template"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "vscode-create-file.createFromPanel",
+				"key": "ctrl+alt+i",
+				"mac": "cmd+alt+i"
+			}
+		],
+		"configuration": [
+			{
+				"title": "Create File configuration",
+				"properties": {
+					"vscode-create-file.defaultPath": {
+						"type": "string",
+						"default": "",
+						"description": "Every time you activate the extension, this path will be filled automatically for you."
+					},
+					"vscode-create-file.showDetails": {
+						"type": "boolean",
+						"default": false,
+						"description": "Setting this option will show or hide the relative path of the file/directory to the root of the active workspace."
+					}
+				}
 			}
 		]
 	},

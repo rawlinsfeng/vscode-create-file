@@ -1,9 +1,5 @@
-<!--
-${0:Description}
-@date    ${date}
--->
 <template>
-  <div class="${1}">
+  <div>
     
   </div>
 </template>
@@ -17,7 +13,7 @@ ${0:Description}
     props: {},
     data() {
       return {
-        
+
       }
     },
     computed: {},
@@ -28,6 +24,6 @@ ${0:Description}
   }
 </script>
 
-<style lang="${2:css}" scoped>
-  $3
+<style lang="scss" scoped>
+
 </style>
