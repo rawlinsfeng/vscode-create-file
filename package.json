@@ -18,6 +18,23 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "create-file",
+					"title": "Create File",
+					"icon": "assets/images/pencil-on-paper-sheet.png"
+				}
+			]
+		},
+		"views": {
+			"create-file": [
+				{
+					"id": "createFileFromJson",
+					"name": "Create File From Json"
+				}
+			]
+		},
 		"commands": [
 			{
 				"command": "vscode-create-file.createFromPanel",
