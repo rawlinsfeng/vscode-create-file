@@ -14,7 +14,10 @@
 		"onCommand:vscode-create-file.createFromPanel",
 		"onCommand:vscode-create-file.vueTemplate",
 		"onCommand:vscode-create-file.vueTsTemplate",
-		"onCommand:vscode-create-file.vue3Template"
+		"onCommand:vscode-create-file.vue3Template",
+		"onView:createFileFromJson",
+		"onView:useTemplate",
+		"onView:createFile"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -32,6 +35,14 @@
 				{
 					"id": "createFileFromJson",
 					"name": "Create File From Json"
+				},
+				{
+					"id": "useTemplate",
+					"name": "Use Template For Current File"
+				},
+				{
+					"id": "createFile",
+					"name": "Create File"
 				}
 			]
 		},

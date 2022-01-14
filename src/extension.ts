@@ -6,6 +6,7 @@ import * as vscode from 'vscode';
 import { Base } from './utils/FileManager';
 import QuickPick from './utils/QuickPick';
 import FsProvider from './utils/FsProvider';
+import { ActivitybarProvider } from './utils/ActivitybarProvider';
 
 async function getBasePath(): Promise<Base | undefined> {
 	const workspaceExists = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0;
@@ -38,6 +39,69 @@ async function getBasePath(): Promise<Base | undefined> {
 	}
 }
 
+function registerTemplateCommand(context: vscode.ExtensionContext) {
+	let fsp = new FsProvider();
+	[
+		{ cmd: 'vueTemplate', languageId: 'vue' },
+		{ cmd: 'vueTsTemplate', languageId: 'vueTs' },
+		{ cmd: 'vue3Template', languageId: 'vue3' },
+	].forEach((e) => {
+		let tmplDisposable = vscode.commands.registerCommand('vscode-create-file.' + e.cmd, () => {
+			const editor = vscode.window.activeTextEditor;
+			if (!editor) {
+				vscode.window.showInformationMessage("Please open a file...");
+				return;
+			}
+			fsp.writeFileContentWithTmpl(`../../assets/templates/${e.languageId}.tmpl`);
+		});
+		context.subscriptions.push(tmplDisposable);
+	});
+}
+
+function registerActivitybarCommand(context: vscode.ExtensionContext) {
+	['common','template','json'].forEach((element: string) => {
+		const activitybarProvider = new ActivitybarProvider(element);
+		let clickDisposable;
+		const fsp = new FsProvider();
+		switch (element) {
+			case 'common':
+				vscode.window.registerTreeDataProvider('createFile', activitybarProvider);
+				clickDisposable = vscode.commands.registerCommand('createFromPanel', async () => {
+					const base = await getBasePath();
+					if (!base) return;
+					const qp = new QuickPick(base);
+					qp.show();
+				});
+				break;
+			case 'template':
+				[
+					{ cmd: 'useVueTemplate', languageId: 'vue' },
+					{ cmd: 'useVueTsTemplate', languageId: 'vueTs' },
+					{ cmd: 'useVue3Template', languageId: 'vue3' },
+					{ cmd: 'useReactTemplate', languageId: 'react' },
+				].forEach(ele => {
+					vscode.window.registerTreeDataProvider('useTemplate', activitybarProvider);
+					clickDisposable = vscode.commands.registerCommand(ele.cmd, () => {
+						const editor = vscode.window.activeTextEditor;
+						if (!editor) {
+							vscode.window.showInformationMessage("Please open a file...");
+							return;
+						}
+						fsp.writeFileContentWithTmpl(`../../assets/templates/${ele.languageId}.tmpl`);
+					});
+				});
+				break;
+			case 'json':
+				vscode.window.registerTreeDataProvider('createFileFromJson', activitybarProvider);
+				clickDisposable = vscode.commands.registerCommand('createBaseonJson', () => {
+					
+				});
+				break;
+		}
+		context.subscriptions.push(clickDisposable);
+	});
+}
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -60,22 +124,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 
-	let fsp = new FsProvider();
-	[
-		{ cmd: 'vueTemplate', languageId: 'vue' },
-		{ cmd: 'vueTsTemplate', languageId: 'vueTs' },
-		{ cmd: 'vue3Template', languageId: 'vue3' },
-	].forEach((e) => {
-			let tmplDisposable = vscode.commands.registerCommand('vscode-create-file.' + e.cmd, () => {
-					const editor = vscode.window.activeTextEditor;
-					if (!editor) {
-							vscode.window.showInformationMessage("Please open a file...");
-							return;
-					}
-					fsp.writeFileContentWithTmpl(`../../assets/templates/${e.languageId}.tmpl`);
-			});
-			context.subscriptions.push(tmplDisposable);
-	})
+	registerTemplateCommand(context);
+
+	registerActivitybarCommand(context);
 }
 
 // this method is called when your extension is deactivated
