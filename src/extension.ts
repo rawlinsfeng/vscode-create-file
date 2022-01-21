@@ -7,6 +7,7 @@ import { Base } from './utils/FileManager';
 import QuickPick from './utils/QuickPick';
 import FsProvider from './utils/FsProvider';
 import { ActivitybarProvider } from './utils/ActivitybarProvider';
+import { JsonWebviewPanel,JsonWebviewSerializer } from './utils/JsonWebviewPanel';
 
 async function getBasePath(): Promise<Base | undefined> {
 	const workspaceExists = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0;
@@ -94,7 +95,7 @@ function registerActivitybarCommand(context: vscode.ExtensionContext) {
 			case 'json':
 				vscode.window.registerTreeDataProvider('createFileFromJson', activitybarProvider);
 				clickDisposable = vscode.commands.registerCommand('createBaseonJson', () => {
-					
+					JsonWebviewPanel.createOrShow(context.extensionUri);
 				});
 				break;
 		}
@@ -127,6 +128,11 @@ export function activate(context: vscode.ExtensionContext) {
 	registerTemplateCommand(context);
 
 	registerActivitybarCommand(context);
+
+	if (vscode.window.registerWebviewPanelSerializer) {
+		// 用于恢复webview的内容
+		vscode.window.registerWebviewPanelSerializer(JsonWebviewPanel.viewType, new JsonWebviewSerializer(context.extensionUri));
+	}
 }
 
 // this method is called when your extension is deactivated
