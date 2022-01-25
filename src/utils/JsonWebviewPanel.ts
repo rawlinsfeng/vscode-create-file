@@ -26,7 +26,7 @@ export class JsonWebviewPanel {
     return {
       enableScripts: true, // Enable javascript in the webview
       // localResourceRoots ---> restrict the webview to only loading content
-      localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'assets')],
+      localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'assets'),vscode.Uri.joinPath(extensionUri, 'out', 'dist')],
     };
   }
 
@@ -63,15 +63,22 @@ export class JsonWebviewPanel {
     const scriptPath = vscode.Uri.joinPath(this._extensionUri, 'out', 'dist', 'render_bundle.js');
 
     // the uri we use to load this script in the webview
-    const scriptUri = (scriptPath).with({ 'scheme': 'vscode-resource' });
+    // const scriptUri = (scriptPath).with({ 'scheme': 'vscode-resource' });
+    const scriptUri = webview.asWebviewUri(scriptPath);
 
     // Local path to css styles
     const styleResetPath = vscode.Uri.joinPath(this._extensionUri, 'assets', 'webview', 'reset.css');
-		const stylesPathMainPath = vscode.Uri.joinPath(this._extensionUri, 'assets', 'webview', 'vscode.css');
+		const stylesPathMainPath = vscode.Uri.joinPath(this._extensionUri, 'assets', 'webview', 'main.css');
+
+    // local path to img src
+    const imgSrcPath = vscode.Uri.joinPath(this._extensionUri, 'assets', 'images', 'logo.png');
 
     // Uri to load styles into webview
     const stylesResetUri = webview.asWebviewUri(styleResetPath);
 		const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
+
+    // Uri to load images into webview
+    const imgSrcUri = webview.asWebviewUri(imgSrcPath);
 
     // Use a nonce to only allow specific scripts to be run
 		const nonce = getNonce();
@@ -95,7 +102,7 @@ export class JsonWebviewPanel {
 				<title>React Webview</title>
 			</head>
 			<body>
-				<h1 id="lines-of-code-counter">Hello vscode webview</h1>
+				<h2 id="webview-header"><img src="${imgSrcUri}" />Enjoy The Webview!</h2>
         <div id="root"></div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>

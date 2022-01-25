@@ -1,0 +1,16 @@
+@import url('./antd.css');
+
+body {
+  background-color: wheat;
+}
+#webview-header>img {
+  width: 32px;
+  height: 32px;
+  margin-right: 14px;
+}
+#app .btns {
+  text-align: end;
+}
+#app .btns>.ant-btn-dangerous {
+  margin-left: 16px;
+}

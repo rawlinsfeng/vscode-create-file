@@ -1,19 +1,35 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { render } from 'react-dom';
+import { Button, Input, Space } from 'antd';
+import ReactJson from 'react-json-view';
 
-import { ConfigProvider, DatePicker, message } from 'antd';
-// 由于 antd 组件的默认文案是英文，所以需要修改为中文
-import zhCN from 'antd/lib/locale/zh_CN';
-import 'antd/dist/antd.css';
+const { TextArea } = Input;
 
 const App = () => {
-  const [date, setDate] = useState(null);
-  const handleChange = value => {
-    message.info(`您选择的日期是: ${value ? value.format('YYYY年MM月DD日') : '未选择'}`);
-    setDate(value);
-  };
+  let [jsonData,setJsonData] = useState({});
+  let [inputValue,setInputValue] = useState(null);
+
+  const handleInputBlur = (event: { target: { value: any; }; }) => {
+    setInputValue(event.target.value);
+  }
+  const handleFormat = () => {
+    if (inputValue) setJsonData(JSON.parse(inputValue));
+  }
+  const handleCreateFile = () => {
+    // TODO
+  }
+
   return (
-    <div>123456</div>
+    <div id='app'>
+      <Space direction="vertical" style={{width: '100%'}}>
+        <TextArea allowClear rows={8} placeholder='请粘贴json数据~' onBlur={handleInputBlur} />
+        <div className='btns'>
+          <Button shape='round' type='primary' onClick={handleFormat}>格式化JSON</Button>
+          <Button shape='round' type='primary' danger onClick={handleCreateFile}>根据该JSON生成目录/文件</Button>
+        </div>
+        <ReactJson src={jsonData} name={false} iconStyle="circle" style={{display: Object.keys(jsonData).length ? '' : 'none'}} />
+      </Space>
+    </div>
   );
 };
 
