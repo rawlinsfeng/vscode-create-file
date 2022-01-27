@@ -1,6 +1,6 @@
 # vscode-create-file - Create New (Template) Files and Directories Based on A Json File or From the Command Panel.
 
-> VS Code 1.53+
+> VS Code 1.63+
 
 This includes:
 - An activity bar
