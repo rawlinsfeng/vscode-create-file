@@ -2,7 +2,7 @@
 	"name": "vscode-create-file",
 	"displayName": "Create File",
 	"description": "Create new (template) files and directories based on a json file or from the command panel.",
-	"version": "0.0.1",
+	"version": "0.0.5",
 	"publisher": "rawlinsfeng",
 	"engines": {
 		"vscode": "^1.53.0"
