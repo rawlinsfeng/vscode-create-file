@@ -1,5 +1,34 @@
 import * as vscode from 'vscode';
 import getNonce from './getNonce';
+import { Base } from './FileManager';
+import * as path from 'path';
+import getDirectoryTree from './getDirectoryTree';
+
+async function getBasePath(): Promise<Base | undefined> {
+	const workspaceExists = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0;
+	if (!workspaceExists) {
+		vscode.window.showInformationMessage('You do not have any workspaces open.');
+		return undefined;
+	}
+
+	if (vscode.workspace.workspaceFolders.length === 1) {
+		return {
+			path: vscode.workspace.workspaceFolders[0].uri,
+			type: 'workspace'
+		};
+	} else {
+		const ws = await vscode.window.showWorkspaceFolderPick();
+
+		if(!ws) {
+			return undefined;
+		}
+
+		return {
+			path: ws.uri,
+			type: 'workspace'
+		};
+	}
+}
 
 export class JsonWebviewPanel {
   /**
@@ -20,6 +49,10 @@ export class JsonWebviewPanel {
 
     // Set the webview's initial html content
 		this._update();
+
+    // Listen for when the panel is disposed
+		// This happens when the user closes the panel or when the panel is closed programmatically
+		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
   }
 
   public static webviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
@@ -53,18 +86,57 @@ export class JsonWebviewPanel {
     JsonWebviewPanel.currentPanel = new JsonWebviewPanel(panel, extensionUri);
   }
 
+  public dispose() {
+    JsonWebviewPanel.currentPanel = undefined;
+
+		// Clean up our resources
+		this._panel.dispose();
+
+		while (this._disposables.length) {
+			const x = this._disposables.pop();
+			if (x) {
+				x.dispose();
+			}
+		}
+  }
   private _update() {
     const webview = this._panel.webview;
     this._panel.title = 'Create File Base on Json';
     this._panel.webview.html = this._getHtmlForWebview(webview);
+    this.emitMessage();
+  }
+  private async emitMessage() {
+    let basePath = await getBasePath();
+    console.log('>>>basePath::', basePath)
+    let base;
+    if(basePath.type === 'file') {
+      base = vscode.Uri.file(path.dirname(basePath.path.fsPath));
+    } else {
+      base = basePath.path;
+    }
+    console.log('>>>base::', base)
+
+    let root = vscode.workspace.getWorkspaceFolder(base);
+    console.log('>>>root::', root)
+    let dirTree = getDirectoryTree(root.uri.fsPath);
+    console.log('>>>file list::', dirTree)
+
+    let msgData = {
+      basePath,
+      root,
+      dirTree,
+    };
+    this._panel.webview.postMessage(JSON.stringify(msgData));
   }
   private _getHtmlForWebview(webview: vscode.Webview) {
-    // Local path to main script run in the webview
+    // Local path to react bundle script run in the webview
     const scriptPath = vscode.Uri.joinPath(this._extensionUri, 'out', 'dist', 'render_bundle.js');
+    // local path to main script run in the webview
+    const mainScriptPath = vscode.Uri.joinPath(this._extensionUri, 'assets', 'webview', 'main.js');
 
     // the uri we use to load this script in the webview
-    // const scriptUri = (scriptPath).with({ 'scheme': 'vscode-resource' });
     const scriptUri = webview.asWebviewUri(scriptPath);
+    const mainScriptUri = (mainScriptPath).with({ 'scheme': 'vscode-resource' });
 
     // Local path to css styles
     const styleResetPath = vscode.Uri.joinPath(this._extensionUri, 'assets', 'webview', 'reset.css');
@@ -105,6 +177,7 @@ export class JsonWebviewPanel {
 				<h2 id="webview-header"><img src="${imgSrcUri}" />Enjoy The Webview!</h2>
         <div id="root"></div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
+        <script nonce="${nonce}" src="${mainScriptUri}"></script>
 			</body>
 			</html>`;
   }

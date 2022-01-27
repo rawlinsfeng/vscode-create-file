@@ -14,14 +14,14 @@ export class ActivitybarProvider implements vscode.TreeDataProvider<ActivitybarI
     const result = [];
     switch (this.itemName) {
       case 'common':
-        result.push(new ActivitybarItem('创建文件或目录', '快捷键：ctrl+alt+i或者cmd+alt+i', vscode.TreeItemCollapsibleState.None, {
+        result.push(new ActivitybarItem('创建文件或目录', '您也可以直接使用快捷键ctrl+alt+i或者cmd+alt+i', vscode.TreeItemCollapsibleState.None, {
           command: 'createFromPanel',
           title: 'show quickPick'
         }));
         break;
       case 'template':
         if (!element) {
-          result.push(new ActivitybarItem('使用模板创建文件', '', vscode.TreeItemCollapsibleState.Collapsed));
+          result.push(new ActivitybarItem('使用模板创建文件', '使用以下选项请首先打开一个文件~', vscode.TreeItemCollapsibleState.Collapsed));
         } else {
           result.push(new ActivitybarItem('使用vue模板','',vscode.TreeItemCollapsibleState.None,{
             command: 'useVueTemplate',
@@ -42,7 +42,7 @@ export class ActivitybarProvider implements vscode.TreeDataProvider<ActivitybarI
         }
         break;
       case 'json':
-        result.push(new ActivitybarItem('根据json创建目录或文件', '', vscode.TreeItemCollapsibleState.None, {
+        result.push(new ActivitybarItem('根据json创建目录或文件', '将打开一个webview,您可以在webview中进行操作~', vscode.TreeItemCollapsibleState.None, {
           command: 'createBaseonJson',
           title: 'create file base on json'
         }));
@@ -62,13 +62,13 @@ export class ActivitybarProvider implements vscode.TreeDataProvider<ActivitybarI
 export class ActivitybarItem extends vscode.TreeItem {
   constructor(
     public readonly label: string,
-    public readonly description: string,
+    public readonly tooltip: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
     public readonly command?: vscode.Command
   ) {
     super(label, collapsibleState);
 
-    this.tooltip = this.label;
+    // this.tooltip = this.label;
   }
 
 }
