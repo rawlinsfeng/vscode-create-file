@@ -17,24 +17,31 @@ type FileType = {
  */
 export default function getDirectoryTree(dirPath: string) {
   let dirTreeArray = [] as FileType[]
+  let hasResult = true
 
   function getFile(dirPath: string, children: Array<ChildItemType>) {
-    fs.readdirSync(dirPath).forEach(file => {
-      const pathName = path.join(dirPath,file)
-      if (fs.statSync(pathName).isDirectory()) {
-        let childItem = {title: file, isLeaf: false, children: []}
-        // @ts-ignore
-        children.push(childItem)
-        getFile(pathName, childItem.children)
-      } else {
-        children.push({title: file, isLeaf: true})
-      }
-    })
+    try {
+      fs.readdirSync(dirPath).forEach(file => {
+        const pathName = path.join(dirPath,file)
+        if (fs.statSync(pathName).isDirectory()) {
+          let childItem = {title: file, isLeaf: false, children: []}
+          // @ts-ignore
+          children.push(childItem)
+          getFile(pathName, childItem.children)
+        } else {
+          children.push({title: file, isLeaf: true})
+        }
+      })
+      hasResult = true
+    } catch (error) {
+      // no such file or directory
+      hasResult = false
+    }
   }
   
   let children = []
   getFile(dirPath, children)
-  dirTreeArray.push({title: dirPath, children})
+  if (hasResult) dirTreeArray.push({title: dirPath, children})
   
   return dirTreeArray
 }

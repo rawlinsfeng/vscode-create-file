@@ -1,5 +1,6 @@
 import { Component } from 'react';
-import { Button, Tree, Select, Row, Col, Card, Alert } from 'antd';
+import { Button, Tree, Select, Row, Col, Card, Alert, Result } from 'antd';
+import { FrownOutlined } from '@ant-design/icons';
 
 const { DirectoryTree } = Tree;
 const { Option } = Select;
@@ -28,13 +29,22 @@ export default class WebviewContent extends Component<WebviewContentProp,Webview
         <Row gutter={25}>
           <Col span={8}>
             <Card title="当前的目录结构" >
-              <DirectoryTree
-                multiple
-                defaultExpandAll
-                // onSelect={onSelect}
-                // onExpand={onExpand}
-                treeData={this.props.currentDirTreeProp}
-              />
+              {
+                this.props.currentDirTreeProp.length > 0
+                ?
+                <DirectoryTree
+                  multiple
+                  defaultExpandAll
+                  // onSelect={onSelect}
+                  // onExpand={onExpand}
+                  treeData={this.props.currentDirTreeProp}
+                />
+                :
+                <Result
+                  icon={<FrownOutlined />}
+                  title="Only works in the src directory"
+                />
+              }
             </Card>
           </Col>
           <Col span={8}>
@@ -53,14 +63,23 @@ export default class WebviewContent extends Component<WebviewContentProp,Webview
           </Col>
           <Col span={8}>
             <Card title="即将生成的目录结构" >
-              <DirectoryTree
-                multiple
-                defaultExpandAll
-                // onSelect={onSelect}
-                // onExpand={onExpand}
-                treeData={this.props.currentDirTreeProp}
-              />
-              <div style={{width: '100%', textAlign: 'center', marginTop: '14px'}}>
+              {
+                this.props.currentDirTreeProp.length > 0
+                ?
+                <DirectoryTree
+                  multiple
+                  defaultExpandAll
+                  // onSelect={onSelect}
+                  // onExpand={onExpand}
+                  treeData={this.props.currentDirTreeProp}
+                />
+                :
+                <Result
+                  icon={<FrownOutlined />}
+                  title="Only works in the src directory"
+                />
+              }
+              <div style={{width: '100%', textAlign: 'center', marginTop: '14px', display: this.props.currentDirTreeProp.length ? '': 'none'}}>
                 <Button shape='round' type='primary' danger>生成目录</Button>
               </div>
             </Card>

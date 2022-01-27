@@ -107,19 +107,15 @@ export class JsonWebviewPanel {
   }
   private async emitMessage() {
     let basePath = await getBasePath();
-    console.log('>>>basePath::', basePath)
     let base;
     if(basePath.type === 'file') {
       base = vscode.Uri.file(path.dirname(basePath.path.fsPath));
     } else {
       base = basePath.path;
     }
-    console.log('>>>base::', base)
-
     let root = vscode.workspace.getWorkspaceFolder(base);
-    console.log('>>>root::', root)
-    let dirTree = getDirectoryTree(root.uri.fsPath);
-    console.log('>>>file list::', dirTree)
+    console.log('>>>basePath::', basePath, '>>>root::', path.join(root.uri.fsPath,'src'))
+    let dirTree = getDirectoryTree(path.join(root.uri.fsPath,'src')); // 只关注src目录
 
     let msgData = {
       basePath,
